@@ -1,0 +1,463 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>F1C100S踩坑记录（四） | Jan-blog</title><meta name="author" content="Jan"><meta name="copyright" content="Jan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux 驱动开发设备树（编写ing）设备树，在设备树中保存的都是一些设备的寄存器信息或数量信息，驱动程序调用这些信息，当我们的设备发生改动后，我们可以不需要去修改驱动源码，而是去修改设备树中的寄存器信息。描述设备树的文件叫做 DTS(Device Tree Source)，这个 DTS 文件（DTS 文件描述设备信息是有相应的语法规则要求的）采用树形结构描述板级设备，也就是开发板上的设备信息，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="F1C100S踩坑记录（四）">
+<meta property="og:url" content="https://jan-z.top/2022/03/06/F1C100S-Note4/index.html">
+<meta property="og:site_name" content="Jan-blog">
+<meta property="og:description" content="Linux 驱动开发设备树（编写ing）设备树，在设备树中保存的都是一些设备的寄存器信息或数量信息，驱动程序调用这些信息，当我们的设备发生改动后，我们可以不需要去修改驱动源码，而是去修改设备树中的寄存器信息。描述设备树的文件叫做 DTS(Device Tree Source)，这个 DTS 文件（DTS 文件描述设备信息是有相应的语法规则要求的）采用树形结构描述板级设备，也就是开发板上的设备信息，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jan-z.top/img/Task_F1C100S.png">
+<meta property="article:published_time" content="2022-03-06T05:12:24.000Z">
+<meta property="article:modified_time" content="2022-04-02T07:09:47.948Z">
+<meta property="article:author" content="Jan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jan-z.top/img/Task_F1C100S.png"><link rel="shortcut icon" href="/img/2.png"><link rel="canonical" href="https://jan-z.top/2022/03/06/F1C100S-Note4/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?9b5f59f9834a4340377d16e786620903";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'F1C100S踩坑记录（四）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-04-02 15:09:47'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- hexo injector head_end start --><link rel="stylesheet" href="https://unpkg.zhimg.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://unpkg.zhimg.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script async src="https://unpkg.zhimg.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/logo1%20(2).png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-compass"></i><span> 目錄</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/diary/"><i class="fa-fw fas fa-bookmark"></i><span> 日志</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-scroll"></i><span> 文章</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="https://jan-z.top/2021/08/01/hello-world/"><i class="fa-fw fab fa-markdown"></i><span> Markdown基本語法</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/12/note-STM32CubeMX/"><i class="fa-fw fas fa-scroll"></i><span> STM32CubeMX 新建工程</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/18/linux常用命令/"><i class="fa-fw fab fa-linux"></i><span> Linux常用命令</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/01/19/Maix-Dock笔记（一）/"><i class="fa-fw fas fa-head-side-brain"></i><span> Maix-Dock笔记</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/02/27/Task-F1C100S/"><i class="fa-fw fab fa-linux"></i><span> Task_F1C100S</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note1/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（一）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note2/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（二）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/02/F1C100S-Note3/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（三）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/06/F1C100S-Note4/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（四）</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-microchip"></i><span> BOM</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/html/Quadcopter2_3.html"><i class="fa-fw fas fa-paper-plane"></i><span> Quadcopter(Ver2.3)</span></a></li><li><a class="site-page child" href="/html/STM32F407VET6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F407VET6核心板</span></a></li><li><a class="site-page child" href="/html/STM32F411CEU6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F411核心版</span></a></li><li><a class="site-page child" href="/html/F1C100S_Core1_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Core(Ver1.0)</span></a></li><li><a class="site-page child" href="/html/F1C100S_Bottom_Board2_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Bottom_Board(Ver2.0)</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 傳送門</span></a></div><div class="menus_item"><a class="site-page" href="/comments/index.html"><i class="fa-fw fas fa-comments"></i><span> 留言區</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/Task_F1C100S.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Jan-blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-compass"></i><span> 目錄</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/diary/"><i class="fa-fw fas fa-bookmark"></i><span> 日志</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-scroll"></i><span> 文章</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="https://jan-z.top/2021/08/01/hello-world/"><i class="fa-fw fab fa-markdown"></i><span> Markdown基本語法</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/12/note-STM32CubeMX/"><i class="fa-fw fas fa-scroll"></i><span> STM32CubeMX 新建工程</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/18/linux常用命令/"><i class="fa-fw fab fa-linux"></i><span> Linux常用命令</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/01/19/Maix-Dock笔记（一）/"><i class="fa-fw fas fa-head-side-brain"></i><span> Maix-Dock笔记</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/02/27/Task-F1C100S/"><i class="fa-fw fab fa-linux"></i><span> Task_F1C100S</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note1/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（一）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note2/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（二）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/02/F1C100S-Note3/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（三）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/06/F1C100S-Note4/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（四）</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-microchip"></i><span> BOM</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/html/Quadcopter2_3.html"><i class="fa-fw fas fa-paper-plane"></i><span> Quadcopter(Ver2.3)</span></a></li><li><a class="site-page child" href="/html/STM32F407VET6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F407VET6核心板</span></a></li><li><a class="site-page child" href="/html/STM32F411CEU6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F411核心版</span></a></li><li><a class="site-page child" href="/html/F1C100S_Core1_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Core(Ver1.0)</span></a></li><li><a class="site-page child" href="/html/F1C100S_Bottom_Board2_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Bottom_Board(Ver2.0)</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 傳送門</span></a></div><div class="menus_item"><a class="site-page" href="/comments/index.html"><i class="fa-fw fas fa-comments"></i><span> 留言區</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">F1C100S踩坑记录（四）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-06T05:12:24.000Z" title="发表于 2022-03-06 13:12:24">2022-03-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-04-02T07:09:47.948Z" title="更新于 2022-04-02 15:09:47">2022-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="F1C100S踩坑记录（四）"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2022/03/06/F1C100S-Note4/#post-comment"><span class="gitalk-comment-count"></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Linux-驱动开发"><a href="#Linux-驱动开发" class="headerlink" title="Linux 驱动开发"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow">Linux 驱动开发</i></h1><h2 id="设备树（编写ing）"><a href="#设备树（编写ing）" class="headerlink" title="设备树（编写ing）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow">设备树（编写ing）</i></h2><p>设备树，在设备树中保存的都是一些设备的寄存器信息或数量信息，驱动程序调用这些信息，当我们的设备发生改动后，我们可以不需要去修改驱动源码，而是去修改设备树中的寄存器信息。描述设备树的文件叫做 DTS(Device Tree Source)，这个 DTS 文件（DTS 文件描述设备信息是有相应的语法规则要求的）采用树形结构描述板级设备，也就是开发板上的设备信息，比如CPU 数量、 内存基地址、IIC 接口上接了哪些设备、SPI 接口上接了哪些设备等。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/设备树1.png" alt="设备树1"></p>
+<p>dts、dtb、dtsi，dts 是设备树源码文件，dtb 是将 dts 编译以后得到的二进制文件，dts 大多时候是直接修改 SOC 厂商提供的 .dts文件，dtsi 是设备树的头文件（一般 .dtsi 文件用于描述 SOC 的内部外设信息，比如 CPU 架构、主频、外设寄存器地址范围，比如 UART、IIC 等等），使用 #include 引用即可。</p>
+<h4 id="设备节点"><a href="#设备节点" class="headerlink" title=" 设备节点 "></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> 设备节点 </i></h4><p>​        每个设备都是一个节点，这些节点都通过一些属性信息来描述节点信息，例如：</p>
+<p>​        <strong>(1) / ：根节点</strong></p>
+<p>​        每个设备树仅有一个根节点，所有的设备节点必须定义在根节点里面，根节点必须包含 model、compatible、#size-cells、#address-cells 这四个属性。compatible 属性也叫做“兼容性”属性，这个属性非常重要！！用于将设备和驱动绑定起来，格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compatible = &quot;manufacturer,model&quot;	// manufacturer 表示厂商，model 一般是模块对应的驱动名字</span><br></pre></td></tr></table></figure>
+<p>​        model 属性值是一个字符串，一般 model 属性描述设备模块信息，例如设备名字；#size-cells 和 #address-cells 属性值是无符号 32 位整形，用于描述子节点的地址信息，#address-cells 属性值决定了子节点 reg 属性中地址信息所占用的字长(32 位)，#size-cells 属性值决定了子节点 reg 属性中长度信息所占的字长(32 位)，一般 reg 属性都是和地址有关的内容，和地址相关的信息有两种：起始地址和地址长度，reg 属性的格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reg = &lt;address1 length1 address2 length2 address3 length3……&gt;</span><br></pre></td></tr></table></figure>
+<p>​        每个“address length”组合表示一个地址范围，其中 address 是起始地址，length 是地址长度，#address-cells 表明 address 这个数据所占用的字长，#size-cells 表明 length 这个数据所占用的字长，例如:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">spi1:spi@1c06000 &#123;</span><br><span class="line">    compatible = &quot;allwinner,suniv-spi&quot;, &quot;allwinner,sun8i-h3-spi&quot;;</span><br><span class="line">    reg = &lt;0x1c06000 0x1000&gt;;</span><br><span class="line">    ......</span><br><span class="line">    #address-cells = &lt;1&gt;;</span><br><span class="line">    #size-cells = &lt;0&gt;;</span><br><span class="line">	......</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>​        第 3 行， reg 属性值为 <0x1c06000 0x1000>，相当于设置了起始地址为 0x1c06000，地址长度为 0x1000，第 5，6 行，节点 spi1 的 #address-cells = <1>，#size-cells = <0>，说明 spi1 的子节点 reg 属性中起始地址所占用的字长为 1，地址长度所占用的字长为 0。</0></1></0x1c06000></p>
+<p><strong>ps ：一般为了避免命名重复，节点可以在节点名后加@然后加上寄存器地址来命名，例如 spi@1c06000 的节点名是 spi 寄存器地址为 1c06000 （如图所示）</strong></p>
+<p><img src="/2022/03/06/F1C100S-Note4/设备树.png" alt="设备树"></p>
+<p>​        <strong>(2) aliases ：别名节点</strong></p>
+<p>​        每个根节点下最多只能有一个 aliases 节点，且该节点只能在根节点下，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/ &#123;</span><br><span class="line">	model = &quot;Rhino Pi&quot;;</span><br><span class="line">	compatible = &quot;licheepi,licheepi-nano&quot;, &quot;allwinner,suniv-f1c100s&quot;;</span><br><span class="line"></span><br><span class="line">	aliases &#123;</span><br><span class="line">		serial0 = &amp;uart0;</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	chosen &#123;</span><br><span class="line">		stdout-path = &quot;serial0:115200n8&quot;;</span><br><span class="line">	&#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>​        该节点表示将 uart0 节点取一个别名为 serial0，也就是说在驱动程序中对 serial0 节点的操作实际上就是对 uart0 节点的操作。</p>
+<p>​        <strong>(3) chosen：传递系统参数</strong></p>
+<h4 id="设备属性"><a href="#设备属性" class="headerlink" title=" 设备属性"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> 设备属性</i></h4><p>​        <strong>(1)status ：用来描述该设备的状态</strong></p>
+<blockquote>
+<p>disable: 表示该设备关闭，不挂载该设备驱动。</p>
+<p>okay: 表示该设备打开，系统启动时挂载该设备驱动。</p>
+<p>reserved：表示该设备保留，由于该设备比较特殊，一般不能被修改的设备可以使用该属性值，例如某设备的固件程序。</p>
+<p>fail: 表示设备不可用，可能原因时遇到了设备故障。</p>
+<p>fail-sss: 表示该设备遇到 sss 错误导致无法操作。</p>
+</blockquote>
+<p>​        例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&amp;mmc0 &#123;</span><br><span class="line">    vmmc-supply = &lt;&amp;reg_vcc3v3&gt;;</span><br><span class="line">    bus-width = &lt;4&gt;;</span><br><span class="line">    broken-cd;</span><br><span class="line">    status = &quot;okay&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>​        表示该设备在系统启动时挂载驱动。</p>
+<center>待</center>
+
+<center>更</center>
+
+<center>新</center>
+
+
+
+
+<h2 id="LED-驱动开发（有部分-BUG-）"><a href="#LED-驱动开发（有部分-BUG-）" class="headerlink" title=" LED 驱动开发（有部分 BUG ）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> LED 驱动开发（有部分 BUG ）</i></h2><p>​        前面学习了系统移植，接下来学习驱动开发。老规矩咱身为一名精通点灯技术的 ctrl c v 工程师🧔 接下来将学习如何编写 Linux 下的 LED 驱动。我们先看下 F1C100S 核心板的原理图（如 图34 所示）</p>
+<p><img src="/2022/03/06/F1C100S-Note4/34.png" alt="34"></p>
+<center>图34</center>
+
+<p>​        由图可知 Rhino Pi （暂定这个名字😋）板载一个用户 LED 连接在 PE6 上。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/35.png" alt="35"></p>
+<center>图35</center>
+
+<p>​        先前看到一篇博客，我们可以用 Linux 提供的 GPIO 系统通过 shell 命令进行点灯（后面再介绍用驱动方式来点灯）。下面介绍 GPIO 引脚编号的计算方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">引脚编号 = 控制引脚的寄存器基数 + 控制引脚寄存器位数</span><br></pre></td></tr></table></figure>
+<p>​        一般情况下，对于GPIOX_Y的编号 = 控制引脚的寄存器基数（32X）+ 控制引脚寄存器位数（Y）= 32X + Y，例如 PE6 的编号 = 32*4 + 6 = 134。接下来进行点灯，首先要激活引脚：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo 134 &gt; /sys/class/gpio/export</span><br></pre></td></tr></table></figure>
+<p>​        设置引脚模式为 [输入] -&gt; in 或 [输出] -&gt; out，这里设置为输出模式：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo out &gt; /sys/class/gpio/gpio134/direction</span><br></pre></td></tr></table></figure>
+<p>​        设置输出值（由原理图知 value 设为 1 即设为高电平时 LED 灯亮，设置为 0 低电平时 LED 灯灭）：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo 1 &gt;/sys/class/gpio/gpio134/value</span><br><span class="line">echo 0 &gt;/sys/class/gpio/gpio134/value</span><br></pre></td></tr></table></figure>
+<p>​        取消引脚导出，当控制完成时，需要释放引脚：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo 134 &gt; /sys/class/gpio/unexport</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/06/F1C100S-Note4/IMG_8594.GIF" alt="IMG_8594"></p>
+<p>​        接下来通过驱动开发方式来点灯，查看 F1C200S 用户手册（PS：因为目前网上只能找到 F1C200S 的手册，F1C100S 与 F1C200S 差别在于内置 DDR 一个是 32MB 一个是 64MB）找到关于 GPIOE 的寄存器地址（如 图36 所示）。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/36.png" alt="36"></p>
+<p><img src="/2022/03/06/F1C100S-Note4/366.png" alt="36"></p>
+<center>图36</center>
+
+<p>​        通过查表我们得到要用到的寄存器，以 GPIOE_CFG0 为例，<code>设备号 = 主设备号 + 次设备号</code>  即：</p>
+<center>Address=0x01C20800+4*0x24+0x00=0x01C20800+0x90=0x1C20890</center>
+
+
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Register Name</th>
+<th style="text-align:center">Offset</th>
+<th style="text-align:center">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">GPIOE_CFG0</td>
+<td style="text-align:center">0x01C20890</td>
+<td style="text-align:center">配置寄存器0</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIOE_DATA</td>
+<td style="text-align:center">0x1C208A0</td>
+<td style="text-align:center">数据寄存器</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIOE_PUL0</td>
+<td style="text-align:center">0x1C208AC</td>
+<td style="text-align:center">上/下拉输出配置</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>​        知道了寄存器的地址，接下来我们根据这些信息来配置我们需要的引脚，在 Ubuntu 中创建一个目录 <em>Linux_Drivers</em> 用来存放 Linux 驱动程序，接下来新建 <em>led_dev.c</em> 文件编写 LED 驱动程序（如 图38 所示），<a target="_blank" rel="noopener" href="https://www.cnblogs.com/qiaoge/archive/2012/03/31/2426282.html">linux驱动头文件说明（转载） - 桥～ - 博客园 (cnblogs.com)</a>    具体操作可查看 <em>【正点原子】I.MX6U嵌入式Linux驱动开发指南V1.6.pdf</em>  里面有详细教程。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/38.png" alt="38"></p>
+<center>图38</center>
+
+<p>​        编写完 LED 驱动程序后，接下来编写测试 APP 程序，led 驱动加载成功以后手动创建/dev/led 节点，应用 APP 通过操作/dev/led 文件来完成对 LED 设备的控制，向/dev/led 文件写 0 表示关闭 LED 灯，写 1 表示打开 LED 灯。新建 ledApp.c 文件编写 LED 应用程序。（如 图39 所示）</p>
+<p><img src="/2022/03/06/F1C100S-Note4/39.png" alt="39"></p>
+<center>图39</center>
+
+<p>​        接下来创建 Makefile 脚本，代码如下所示，KERNELDIR 变量表示板子当前运行的 Linux 操作系统的源码（即：内核的源码）的目录。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">KERNELDIR := /home/z/linux/F1C100S/kernel/linux-5.7.1</span><br><span class="line">CURRENT_PATH := <span class="variable">$(<span class="built_in">shell</span> pwd)</span></span><br><span class="line"></span><br><span class="line">obj-m := led_dev.o</span><br><span class="line"></span><br><span class="line"><span class="section">kernel_modules:</span></span><br><span class="line">	<span class="variable">$(MAKE)</span> -C <span class="variable">$(KERNELDIR)</span> M=<span class="variable">$(CURRENT_PATH)</span> modules</span><br><span class="line">	</span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	<span class="variable">$(MAKE)</span> -C <span class="variable">$(KERNELDIR)</span> M=<span class="variable">$(CURRENT_PATH)</span> clean</span><br></pre></td></tr></table></figure>
+<p>​        执行 make 命令编译成功以后就会生成一个名为 led_dev.ko 的驱动模块文件（如 图40 所示）。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/40.png" alt="40"></p>
+<center>图40</center>
+
+<p>​        接着输入如下命令编译 ledApp.c 这个测试程序：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arm-linux-gnueabi-gcc ledApp.c -o ledApp</span><br></pre></td></tr></table></figure>
+<p>​        将生成的 led.ko 和 ledApp 文件拷贝至 <em>/media/z/rootfs/lib/modules/5.7.1</em>-Rhino Pi （如 图41 所示），因为使用 modprobe 命令来加载驱动。modprobe 命令默认会去 <em>/lib/modules/<kernel-version></kernel-version></em> 目录中查找模块，比如俺使用的 Linux kernel 的版本号为 5.7.1，所以 modprobe 命令默认会到 <em>/lib/modules/5.7.1</em>-Rhino PI* 这个目录中查找相应的驱动模块，一般自己制作的根文件系统中是不会有这个目录的，需要自己手动创建。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/41.png" alt="41"></p>
+<center>图41</center>
+
+<p>​        重启开发板进入 <em>/lib/moudles/5.7.1</em>-Rhino PI 目录，输入以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">depmod 					//第一次加载驱动的时候需要运行此命令</span><br><span class="line">modprobe led_dev.ko 	//加载驱动</span><br><span class="line">mknod /dev/led c 200 0	//创建 &quot;/dev/led&quot; 设备节点</span><br><span class="line"></span><br><span class="line">./ledApp /dev/led on 	//打开 LED 灯</span><br><span class="line">./ledApp /dev/led off 	//关闭 LED 灯</span><br><span class="line"></span><br><span class="line">modprobe -r led_dev.ko  //卸载驱动	or 	rmmod led_dev.ko 		</span><br></pre></td></tr></table></figure>
+<p>​        如果出现以下报错（如 图42 所示），原因是默认情况下根文件系统不支持该指令，可以通过配置busybox来添加这个功能。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/42.png" alt="42"></p>
+<center>图42</center>
+
+<p>​        进入 <em>/output/build/busybox-1.27.2</em> 目录，执行 make menuconfig 命令，进入 Linux Module Utilities 菜单，勾选✔上 depmod（如 图43 所示）。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/43.png" alt="43"></p>
+<center>图43</center>
+
+<p>​        接着将当前目录下的 .config 文件重命名为 busybox.config 后覆盖掉 <em>package/busybox/busybox.config</em> 文件，之后在 buildroot 根目录下重新执行 make 指令编译，busybox 将会自动更新，后更新根文件系统（参考：<a href="https://jan-z.top/2022/03/02/F1C100S-Note3/">根文件系统移植</a>）。</p>
+<p>​        若出现以下情况（如 图44 所示），一般可能是没有执行权限，也可能是缺少库文件。</p>
+<p><img src="/2022/03/06/F1C100S-Note4/44.png" alt="44"></p>
+<center>图44</center>
+
+<p>​        在 led_dev 目录下输入 <code>arm-linux-gnueabi-readelf -e ledApp</code> ，可以看到提示 [Requesting program interpreter: /lib/ld-linux.so.3] ，通过 <code>find / -name &quot;linux.so.3&quot;</code> 命令找到 linux.so.3 所在的目录，通过 <code>ls -il</code> 命令知道 linux.so.3 软链接 ld-2.25.so ，将其复制到开发板 <em>/lib</em> 目录下并重新软链接。 </p>
+<p><img src="/2022/03/06/F1C100S-Note4/45.png" alt="45"></p>
+<p><img src="/2022/03/06/F1C100S-Note4/46.png" alt="46"></p>
+<h2 id="驱动模块的加载和卸载（未编写）"><a href="#驱动模块的加载和卸载（未编写）" class="headerlink" title=" 驱动模块的加载和卸载（未编写）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> 驱动模块的加载和卸载（未编写）</i></h2><h2 id="USB-驱动开发"><a href="#USB-驱动开发" class="headerlink" title=" USB 驱动开发 "></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> USB 驱动开发 </i></h2><p>​        F1c100s芯片支持USB的OTG模式，可以通过拉高 usbid 或拉低 usbid 定义开发板当前是 device 模式还是 host 模式，那么上面是 主机模式，上面是设备模式呢？比如说 U 盘插入电脑 USB 接口，电脑的 USB 接口就是 HOST ，U 盘的 USB 接口就是 SLAVE（从设备）。</p>
+<ul>
+<li><p>DEVICE ：设备模式，usbid（PE2） 拉高（ps：可以通过 Linux 系统直接修改当前 USB 的模式）</p>
+</li>
+<li><p>HOST    ：主机模式，usbid（PE2） 拉低（ps：可以通过 Linux 系统直接修改当前 USB 的模式）</p>
+</li>
+<li><p>OTG      ：既能当主机又能当设备</p>
+</li>
+</ul>
+<p>​        接下来修改 Linux 内核源码，修改设备树文件，进入 <em>arch/arm/boot/dts/</em> 目录修改 <em>suniv-f1c100s.dtsi</em> 文件，在 soc 节点增加以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">usb_otg: usb@1c13000 &#123;</span><br><span class="line">	compatible = &quot;allwinner,suniv-musb&quot;;</span><br><span class="line">	reg = &lt;0x01c13000 0x0400&gt;;</span><br><span class="line">	clocks = &lt;&amp;ccu CLK_BUS_OTG&gt;;</span><br><span class="line">	resets = &lt;&amp;ccu RST_BUS_OTG&gt;;</span><br><span class="line">	interrupts = &lt;26&gt;;</span><br><span class="line">	interrupt-names = &quot;mc&quot;;</span><br><span class="line">	phys = &lt;&amp;usbphy 0&gt;;</span><br><span class="line">	phy-names = &quot;usb&quot;;</span><br><span class="line">	extcon = &lt;&amp;usbphy 0&gt;;</span><br><span class="line">	allwinner,sram = &lt;&amp;otg_sram 1&gt;;</span><br><span class="line">	status = &quot;disabled&quot;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">usbphy: phy@1c13400 &#123;</span><br><span class="line">	compatible = &quot;allwinner,suniv-usb-phy&quot;;</span><br><span class="line">	reg = &lt;0x01c13400 0x10&gt;;</span><br><span class="line">	reg-names = &quot;phy_ctrl&quot;;</span><br><span class="line">	clocks = &lt;&amp;ccu CLK_USB_PHY0&gt;;</span><br><span class="line">	clock-names = &quot;usb0_phy&quot;;</span><br><span class="line">	resets = &lt;&amp;ccu RST_USB_PHY0&gt;;</span><br><span class="line">	reset-names = &quot;usb0_reset&quot;;</span><br><span class="line">	#phy-cells = &lt;1&gt;;</span><br><span class="line">	status = &quot;disabled&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>​        接下来修改 <em>suniv-f1c100s-licheepi-nano.dts</em> 文件，在外部添加以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&amp;otg_sram &#123;</span><br><span class="line">        status = &quot;okay&quot;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&amp;usb_otg &#123;</span><br><span class="line">        dr_mode = &quot;host&quot;; /* 三个可选项: otg / host / peripheral */</span><br><span class="line">        status = &quot;okay&quot;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&amp;usbphy &#123;</span><br><span class="line">        usb0_id_det-gpio = &lt;&amp;pio 4 2 GPIO_ACTIVE_HIGH&gt;; /* PE2 */</span><br><span class="line">        status = &quot;okay&quot;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>​        进入 <em>drivers/phy/allwinner/</em> 目录，修改 <em>phy-sun4i-usb.c</em> 文件，因为 linux 并没有对F1C100s写驱动，因此我们需要添加驱动程序，在第 100 行添加如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">suniv_phy,</span><br></pre></td></tr></table></figure>
+<p>​        在第 862 行添加如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">static const struct sun4i_usb_phy_cfg suniv_cfg = &#123;</span><br><span class="line">    .num_phys = 1,</span><br><span class="line">    .type = suniv_phy,</span><br><span class="line">    .disc_thresh = 3,</span><br><span class="line">    .phyctl_offset = REG_PHYCTL_A10,</span><br><span class="line">    .dedicated_clocks = true,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>​        在第 985 行添加如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; .compatible = &quot;allwinner,suniv-usb-phy&quot;, .data = &amp;suniv_cfg &#125;,</span><br></pre></td></tr></table></figure>
+<p>​        接着进入 <em>drivers/usb/musb/</em> 目录修改 <em>sunxi.c</em> 文件，将第 717 行修改为如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (of_device_is_compatible(np, &quot;allwinner,sun4i-a10-musb&quot;)||of_device_is_compatible(np,&quot;allwinner,suniv-musb&quot;))</span><br></pre></td></tr></table></figure>
+<p>​        将第 724 行修改为如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">of_device_is_compatible(np, &quot;allwinner,sun8i-h3-musb&quot;)||of_device_is_compatible(np, &quot;allwinner,suniv-musb&quot;)) &#123;</span><br></pre></td></tr></table></figure>
+<p>​        在第 817行添加如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123; .compatible = &quot;allwinner,suniv-musb&quot;, &#125;,</span><br></pre></td></tr></table></figure>
+<p>​        在 Linux 内核根目录下执行 make menuconfig 命令将 usb 驱动添加到内核，进入 Device Drivers -&gt; USB support 开启框选上的选项（如图 51 所示）</p>
+<p><img src="/2022/03/06/F1C100S-Note4/51.png" alt="51"></p>
+<p><img src="/2022/03/06/F1C100S-Note4/51-1.png" alt="51-1"></p>
+<center>图 51</center>
+
+<p>​        保存退出后执行 make-j4 编译内核。</p>
+<h2 id="LCD-驱动开发"><a href="#LCD-驱动开发" class="headerlink" title=" LCD 驱动开发 "></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> LCD 驱动开发 </i></h2><p><img src="/2022/03/06/F1C100S-Note4/47.png" alt="47"></p>
+<p>​        通过查看原理图得知连接如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">LCD (ST7735S)</th>
+<th style="text-align:center">F1C100S</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">LCD_RST</td>
+<td style="text-align:center">PE3</td>
+</tr>
+<tr>
+<td style="text-align:center">LCD_DC</td>
+<td style="text-align:center">PE5</td>
+</tr>
+<tr>
+<td style="text-align:center">LCD_MOSI</td>
+<td style="text-align:center">PA1 (SPI1_MOSI)</td>
+</tr>
+<tr>
+<td style="text-align:center">LCD_SCLK</td>
+<td style="text-align:center">PA2 (SPI1_CLK)</td>
+</tr>
+<tr>
+<td style="text-align:center">LCD_CS</td>
+<td style="text-align:center">底板已硬件接地</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>​        接下来我们通过修改 Linux 内核中自带的驱动源码快速移植 LCD 驱动，进入 Linux 内核目录 <em>drivers/staging/fbtft</em> 修改 ST7789V 的驱动（参考大佬的文章 <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_46604211/article/details/116449891">记录为Linux配置spi屏幕 (st7735s)</a>）。</p>
+<p>​        修改完成后，启动图形配置界面 make menuconfig （此前踩过坑，多亏 Leesans 大佬提醒）FC100S 在开启 SPI 驱动的时候必须开启 A31 SPI Controller （Device Drivers -&gt; SPI support）如图  48 所示</p>
+<p><img src="/2022/03/06/F1C100S-Note4/48.png" alt="48"></p>
+<center>图 48</center>
+
+<p>​        接下来将 ST7735S 驱动编译进内核中，进入 Device Drivers -&gt; Staging drivers -&gt; Support for small TFT LCD display modules 选择 &lt;*&gt;   FB driver for the ST7789V LCD Controller  （如 图49 所示）</p>
+<p><img src="/2022/03/06/F1C100S-Note4/49.png" alt="49"></p>
+<center>图49</center>
+
+<p>​        接下来 make -j4 编译内核，然后将镜像拷贝到tf卡第一分区中即可。接着修改 u-boot 的 bootargs 参数，在进入 u-boot 时按任意键进入 boot 命令，输入以下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setenv bootargs &quot;console=tty1 console=ttyS0,115200 panic=5 rootwait root=/dev/mmcblk0p2 earlyprintk rw&quot;</span><br><span class="line">savnnev</span><br></pre></td></tr></table></figure>
+<p>​        目前为止我们还不能使用 LCD 作为终端进行交互，因为我们的设置还未完成，打开开发板根文件系统中的/etc/inittab 文件，加入以下代码 （如 图50 所示）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">console::askfirst:-</span><br><span class="line">tty1::askfirst:-/bin/sh	/* 打开 tty1 也就是设置 LCD 作为终端 */</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/06/F1C100S-Note4/50.png" alt="50"></p>
+<center>图50</center>
+
+<p>​        修改完成后保存退出，重启开发板后，开发板 LCD 屏幕最后一行会显示以下语句 <code>Please press Enter to activate this console</code> 中文意思是按下回车键使能当前终端，上一环节，俺们已经使能了 usb 驱动，因此直接接上 usb 键盘按下回车按键使能即可，我们可以让屏幕打印输出 “hello Rhino Pi” 测试（如 图52 所示），代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo hello Rhino Pi &gt; /dev/tty1</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/06/F1C100S-Note4/52.jpg" alt="52"></p>
+<center>图52</center>
+
+<p>​        接下来使能 Linux logo 显示，Linux 内核启动的时候是可以选择（如 图52 所示）显示小企鹅 logo 的，这个 logo 显示是需要手动配置，上一步，俺们修改过设备树文件，所以需要重新编译一下设备树，代码如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make dtbs</span><br></pre></td></tr></table></figure>
+<p>​        接下来打开图形化配置界面进行配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Device Drivers  ---&gt;</span><br><span class="line">    Graphics support  ---&gt;</span><br><span class="line">       [*] Bootup logo  ---&gt;</span><br><span class="line">           [*] Standard black and white Linux logo (NEW)</span><br><span class="line">           [*] Standard 16-color Linux logo (NEW)</span><br><span class="line">           [*] Standard 224-color Linux logo (NEW)</span><br></pre></td></tr></table></figure>
+<p>​        保存退出后重新编译，启动开发板（如 图53 所示）</p>
+<p><img src="/2022/03/06/F1C100S-Note4/53.jpg" alt="53"></p>
+<center>图53</center>
+
+
+
+<h2 id="无线网卡（未编写）"><a href="#无线网卡（未编写）" class="headerlink" title=" 无线网卡（未编写）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> 无线网卡（未编写）</i></h2><h2 id="音频驱动（未编写）"><a href="#音频驱动（未编写）" class="headerlink" title=" 音频驱动（未编写）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> 音频驱动（未编写）</i></h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Jan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://jan-z.top/2022/03/06/F1C100S-Note4/">https://jan-z.top/2022/03/06/F1C100S-Note4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://jan-z.top" target="_blank">Jan-blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/Task_F1C100S.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/03/02/F1C100S-Note3/"><img class="next-cover" src="/img/Task_F1C100S.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">F1C100S踩坑记录（三）</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/logo1%20(2).png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Jan</div><div class="author-info__description">不定时更新的博客</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/CUTETA"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://gitee.com/Jan_Secret_base" target="_blank" title="Gitee"><i class="fab fa-google"></i></a><a class="social-icon" href="mailto:13242449415@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Hi, welcome to my blog!（20：00-22：00为本站更新时间，期间可能会无法访问，可重复刷新多次！）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91"><span class="toc-number">1.</span> <span class="toc-text">Linux 驱动开发</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E6%A0%91%EF%BC%88%E7%BC%96%E5%86%99ing%EF%BC%89"><span class="toc-number">1.1.</span> <span class="toc-text">设备树（编写ing）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E8%8A%82%E7%82%B9"><span class="toc-number">1.1.0.1.</span> <span class="toc-text"> 设备节点 </span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E5%A4%87%E5%B1%9E%E6%80%A7"><span class="toc-number">1.1.0.2.</span> <span class="toc-text"> 设备属性</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LED-%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91%EF%BC%88%E6%9C%89%E9%83%A8%E5%88%86-BUG-%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text"> LED 驱动开发（有部分 BUG ）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A9%B1%E5%8A%A8%E6%A8%A1%E5%9D%97%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8D%B8%E8%BD%BD%EF%BC%88%E6%9C%AA%E7%BC%96%E5%86%99%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text"> 驱动模块的加载和卸载（未编写）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#USB-%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91"><span class="toc-number">1.4.</span> <span class="toc-text"> USB 驱动开发 </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LCD-%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91"><span class="toc-number">1.5.</span> <span class="toc-text"> LCD 驱动开发 </span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A0%E7%BA%BF%E7%BD%91%E5%8D%A1%EF%BC%88%E6%9C%AA%E7%BC%96%E5%86%99%EF%BC%89"><span class="toc-number">1.6.</span> <span class="toc-text"> 无线网卡（未编写）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9F%B3%E9%A2%91%E9%A9%B1%E5%8A%A8%EF%BC%88%E6%9C%AA%E7%BC%96%E5%86%99%EF%BC%89"><span class="toc-number">1.7.</span> <span class="toc-text"> 音频驱动（未编写）</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/06/F1C100S-Note4/" title="F1C100S踩坑记录（四）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（四）"/></a><div class="content"><a class="title" href="/2022/03/06/F1C100S-Note4/" title="F1C100S踩坑记录（四）">F1C100S踩坑记录（四）</a><time datetime="2022-03-06T05:12:24.000Z" title="发表于 2022-03-06 13:12:24">2022-03-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/02/F1C100S-Note3/" title="F1C100S踩坑记录（三）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（三）"/></a><div class="content"><a class="title" href="/2022/03/02/F1C100S-Note3/" title="F1C100S踩坑记录（三）">F1C100S踩坑记录（三）</a><time datetime="2022-03-02T06:42:28.000Z" title="发表于 2022-03-02 14:42:28">2022-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/01/F1C100S-Note2/" title="F1C100S踩坑记录（二）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（二）"/></a><div class="content"><a class="title" href="/2022/03/01/F1C100S-Note2/" title="F1C100S踩坑记录（二）">F1C100S踩坑记录（二）</a><time datetime="2022-03-01T13:47:06.000Z" title="发表于 2022-03-01 21:47:06">2022-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/01/F1C100S-Note1/" title="F1C100S踩坑记录（一）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（一）"/></a><div class="content"><a class="title" href="/2022/03/01/F1C100S-Note1/" title="F1C100S踩坑记录（一）">F1C100S踩坑记录（一）</a><time datetime="2022-03-01T00:35:35.000Z" title="发表于 2022-03-01 08:35:35">2022-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/02/27/Task-F1C100S/" title="Task_F1C100S"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Task_F1C100S"/></a><div class="content"><a class="title" href="/2022/02/27/Task-F1C100S/" title="Task_F1C100S">Task_F1C100S</a><time datetime="2022-02-27T08:25:01.000Z" title="发表于 2022-02-27 16:25:01">2022-02-27</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2022 By Jan</div><div class="footer_custom_text">框架 Hexo | 主題 Butterfly</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '7c8dc76ecb8d692c9e8e',
+      clientSecret: '56e15f4df48798e4cb28bb8356ce74832796c7d4',
+      repo: 'comment',
+      owner: 'CUTETA',
+      admin: ['CUTETA'],
+      id: '400805d6e040fb86275705d74360a742',
+      language: 'zh-CN',
+      perPage: 10,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><!-- hexo injector body_end end --></body></html>

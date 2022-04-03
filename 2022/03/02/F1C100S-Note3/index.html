@@ -1,0 +1,353 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>F1C100S踩坑记录（三） | Jan-blog</title><meta name="author" content="Jan"><meta name="copyright" content="Jan"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="rootfs  根文件系统移植根文件系统和 Linux 内核是分开的，单独的 Linux 内核是没法正常工作的，必须加上根文件系统。如果不提供根文件系统，Linux 内核在启动时会提示 Kernel panic （内核崩溃）。下面将分别使用 busyBox 和 Buildroot 制作根文件系统。  Buildroot 制作根文件系统安装 Buildroot 软件（下载链接），解压后进入该目录，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="F1C100S踩坑记录（三）">
+<meta property="og:url" content="https://jan-z.top/2022/03/02/F1C100S-Note3/index.html">
+<meta property="og:site_name" content="Jan-blog">
+<meta property="og:description" content="rootfs  根文件系统移植根文件系统和 Linux 内核是分开的，单独的 Linux 内核是没法正常工作的，必须加上根文件系统。如果不提供根文件系统，Linux 内核在启动时会提示 Kernel panic （内核崩溃）。下面将分别使用 busyBox 和 Buildroot 制作根文件系统。  Buildroot 制作根文件系统安装 Buildroot 软件（下载链接），解压后进入该目录，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jan-z.top/img/Task_F1C100S.png">
+<meta property="article:published_time" content="2022-03-02T06:42:28.000Z">
+<meta property="article:modified_time" content="2022-04-02T06:58:12.254Z">
+<meta property="article:author" content="Jan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jan-z.top/img/Task_F1C100S.png"><link rel="shortcut icon" href="/img/2.png"><link rel="canonical" href="https://jan-z.top/2022/03/02/F1C100S-Note3/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?9b5f59f9834a4340377d16e786620903";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#121212","position":"bottom-left"},
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'F1C100S踩坑记录（三）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-04-02 14:58:12'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><!-- hexo injector head_end start --><link rel="stylesheet" href="https://unpkg.zhimg.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/font-awesome-animation.min.css" media="defer" onload="this.media='all'"><link rel="stylesheet" href="https://unpkg.zhimg.com/hexo-butterfly-tag-plugins-plus@latest/lib/tag_plugins.css" media="defer" onload="this.media='all'"><script async src="https://unpkg.zhimg.com/hexo-butterfly-tag-plugins-plus@latest/lib/assets/carousel-touch.js"></script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.4.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/logo1%20(2).png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-compass"></i><span> 目錄</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/diary/"><i class="fa-fw fas fa-bookmark"></i><span> 日志</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-scroll"></i><span> 文章</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="https://jan-z.top/2021/08/01/hello-world/"><i class="fa-fw fab fa-markdown"></i><span> Markdown基本語法</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/12/note-STM32CubeMX/"><i class="fa-fw fas fa-scroll"></i><span> STM32CubeMX 新建工程</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/18/linux常用命令/"><i class="fa-fw fab fa-linux"></i><span> Linux常用命令</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/01/19/Maix-Dock笔记（一）/"><i class="fa-fw fas fa-head-side-brain"></i><span> Maix-Dock笔记</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/02/27/Task-F1C100S/"><i class="fa-fw fab fa-linux"></i><span> Task_F1C100S</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note1/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（一）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note2/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（二）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/02/F1C100S-Note3/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（三）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/06/F1C100S-Note4/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（四）</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-microchip"></i><span> BOM</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/html/Quadcopter2_3.html"><i class="fa-fw fas fa-paper-plane"></i><span> Quadcopter(Ver2.3)</span></a></li><li><a class="site-page child" href="/html/STM32F407VET6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F407VET6核心板</span></a></li><li><a class="site-page child" href="/html/STM32F411CEU6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F411核心版</span></a></li><li><a class="site-page child" href="/html/F1C100S_Core1_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Core(Ver1.0)</span></a></li><li><a class="site-page child" href="/html/F1C100S_Bottom_Board2_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Bottom_Board(Ver2.0)</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 傳送門</span></a></div><div class="menus_item"><a class="site-page" href="/comments/index.html"><i class="fa-fw fas fa-comments"></i><span> 留言區</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/Task_F1C100S.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Jan-blog</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-compass"></i><span> 目錄</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 時間軸</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/diary/"><i class="fa-fw fas fa-bookmark"></i><span> 日志</span></a></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-scroll"></i><span> 文章</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="https://jan-z.top/2021/08/01/hello-world/"><i class="fa-fw fab fa-markdown"></i><span> Markdown基本語法</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/12/note-STM32CubeMX/"><i class="fa-fw fas fa-scroll"></i><span> STM32CubeMX 新建工程</span></a></li><li><a class="site-page child" href="https://jan-z.top/2021/10/18/linux常用命令/"><i class="fa-fw fab fa-linux"></i><span> Linux常用命令</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/01/19/Maix-Dock笔记（一）/"><i class="fa-fw fas fa-head-side-brain"></i><span> Maix-Dock笔记</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/02/27/Task-F1C100S/"><i class="fa-fw fab fa-linux"></i><span> Task_F1C100S</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note1/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（一）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/01/F1C100S-Note2/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（二）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/02/F1C100S-Note3/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（三）</span></a></li><li><a class="site-page child" href="https://jan-z.top/2022/03/06/F1C100S-Note4/"><i class="fa-fw fab fa-linux"></i><span> F1C100S 踩坑记录（四）</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="javascript:void(0);"><i class="fa-fw fas fa-microchip"></i><span> BOM</span><i class="fas fa-chevron-down expand"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/html/Quadcopter2_3.html"><i class="fa-fw fas fa-paper-plane"></i><span> Quadcopter(Ver2.3)</span></a></li><li><a class="site-page child" href="/html/STM32F407VET6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F407VET6核心板</span></a></li><li><a class="site-page child" href="/html/STM32F411CEU6%E6%A0%B8%E5%BF%83%E6%9D%BF.html"><i class="fa-fw fas fa-microchip"></i><span> STM32F411核心版</span></a></li><li><a class="site-page child" href="/html/F1C100S_Core1_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Core(Ver1.0)</span></a></li><li><a class="site-page child" href="/html/F1C100S_Bottom_Board2_0.html"><i class="fa-fw fab fa-linux"></i><span> F1C100S_Bottom_Board(Ver2.0)</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 傳送門</span></a></div><div class="menus_item"><a class="site-page" href="/comments/index.html"><i class="fa-fw fas fa-comments"></i><span> 留言區</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 關於</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">F1C100S踩坑记录（三）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-03-02T06:42:28.000Z" title="发表于 2022-03-02 14:42:28">2022-03-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-04-02T06:58:12.254Z" title="更新于 2022-04-02 14:58:12">2022-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AC%94%E8%AE%B0/Linux/">Linux</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="F1C100S踩坑记录（三）"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2022/03/02/F1C100S-Note3/#post-comment"><span class="gitalk-comment-count"></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="rootfs-根文件系统移植"><a href="#rootfs-根文件系统移植" class="headerlink" title=" rootfs  根文件系统移植"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> rootfs  根文件系统移植</i></h2><p>根文件系统和 Linux 内核是分开的，单独的 Linux 内核是没法正常工作的，必须加上根文件系统。如果不提供根文件系统，Linux 内核在启动时会提示 Kernel panic （内核崩溃）。下面将分别使用 busyBox 和 Buildroot 制作根文件系统。</p>
+<h3 id="Buildroot-制作根文件系统"><a href="#Buildroot-制作根文件系统" class="headerlink" title=" Buildroot 制作根文件系统"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> Buildroot 制作根文件系统</i></h3><p>安装 Buildroot 软件（<a target="_blank" rel="noopener" href="https://buildroot.org/downloads/">下载链接</a>），解压后进入该目录，执行以下命令进入图形配置界面：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">make clean</span><br><span class="line">make menuconfig</span><br></pre></td></tr></table></figure>
+<p>进入 Target options 选项（架构选择），将 Target Architecture 设置为 ARM 架构 little endian （小端模式），保存返回上一级（如 图21 所示）。</p>
+<blockquote>
+<p>第一个选项：架构选择</p>
+<p>第二个选项：输出的二进制文件的格式</p>
+<p>第三个选项：架构体系</p>
+<p>第四个选项：矢量浮点处理器</p>
+<p>第五个选项：应用程序二进制接口</p>
+<p>第六个选项：浮点运算规则</p>
+<p>第七个选项：选择指令集</p>
+</blockquote>
+<p><img src="/2022/03/02/F1C100S-Note3/21.png" alt="21"></p>
+<center>图21</center>
+
+<p>进入 Build options 选项，修改编译时使用的库类型为 both static and shared （同时使用静态库和动态库），保存返回上一级（如 图22 所示）。</p>
+<p><img src="/2022/03/02/F1C100S-Note3/22.png" alt="22"></p>
+<center>图22</center>
+
+<p>进入 Toolchain（工具链） 选项，勾选上 Enable WCHAR support  ，Thread library debugging ，以及框选的选项（如 图23 所示），保存返回上一级。</p>
+<p><img src="/2022/03/02/F1C100S-Note3/23.png" alt="23"></p>
+<center>图23</center>
+
+<p>进入 System configuration（系统配置） 选项，System banner 表示启动根文件系统后输出的信息，Root password 该选项可以修改登录密码（如 图24 所示），保存退出图形配置界面。</p>
+<p><img src="/2022/03/02/F1C100S-Note3/24.png" alt="24"></p>
+<center>图24</center>
+
+<p>执行以下命令编译根文件系统，期间可能需要科学上网 (～￣▽￣)～</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/02/F1C100S-Note3/25.png" alt="25"></p>
+<center>图25</center>
+
+<p>编译完成后进入 <em>output/images</em> 目录，找到 rootfs.tar 文件（如 图26 所示）将其解压拷贝进上一环节创建的 TF 卡 rfoots 分区。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo tar -xvf rootfs.tar -C /media/z/rootfs/</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/02/F1C100S-Note3/26.png" alt="26"></p>
+<center>图26</center>
+
+<p>上电启动后，可以在 SecureCRT 中看到串口输出信息（如 图27 所示），很完美…踩坑了😭</p>
+<p><img src="/2022/03/02/F1C100S-Note3/27.png" alt="27"></p>
+<center>图27</center>
+
+<p>原因是需要修改设备树增加 mmc，进入 <em>/arch/arm/boot/dts/</em> 目录下，修改 <em>suniv-f1c100s.dtsi</em> 文件，添加头文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;dt-bindings/clock/suniv-ccu-f1c100s.h&gt;</span><br><span class="line">#include &lt;dt-bindings/reset/suniv-ccu-f1c100s.h&gt;</span><br></pre></td></tr></table></figure>
+<p>在 soc 子节点下的 pio子节点添加以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mmc0_pins: mmc0-pins &#123;</span><br><span class="line">	pins = &quot;PF0&quot;, &quot;PF1&quot;, &quot;PF2&quot;, &quot;PF3&quot;, &quot;PF4&quot;, &quot;PF5&quot;;</span><br><span class="line">	function = &quot;mmc0&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在 soc 子节点下添加 mmc0 子节点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mmc0: mmc@1c0f000 &#123;</span><br><span class="line">	compatible = &quot;allwinner,suniv-f1c100s-mmc&quot;,</span><br><span class="line">		     &quot;allwinner,sun7i-a20-mmc&quot;;</span><br><span class="line">	reg = &lt;0x01c0f000 0x1000&gt;;</span><br><span class="line">	clocks = &lt;&amp;ccu CLK_BUS_MMC0&gt;,</span><br><span class="line">		 &lt;&amp;ccu CLK_MMC0&gt;,</span><br><span class="line">		 &lt;&amp;ccu CLK_MMC0_OUTPUT&gt;,</span><br><span class="line">		 &lt;&amp;ccu CLK_MMC0_SAMPLE&gt;;</span><br><span class="line">	clock-names = &quot;ahb&quot;,</span><br><span class="line">			      &quot;mmc&quot;,</span><br><span class="line">			      &quot;output&quot;,</span><br><span class="line">		    	  &quot;sample&quot;;</span><br><span class="line">	resets = &lt;&amp;ccu RST_BUS_MMC0&gt;;</span><br><span class="line">	reset-names = &quot;ahb&quot;;</span><br><span class="line">	interrupts = &lt;23&gt;;</span><br><span class="line">	pinctrl-names = &quot;default&quot;;</span><br><span class="line">	pinctrl-0 = &lt;&amp;mmc0_pins&gt;;</span><br><span class="line">	status = &quot;disabled&quot;;</span><br><span class="line">	#address-cells = &lt;1&gt;;</span><br><span class="line">	#size-cells = &lt;0&gt;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>接着修改 <em>suniv-f1c100s-licheepi-nano.dts</em> 添加头文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;dt-bindings/gpio/gpio.h&gt;</span><br></pre></td></tr></table></figure>
+<p>在根节点增加以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">reg_vcc3v3: vcc3v3 &#123;</span><br><span class="line">               compatible = &quot;regulator-fixed&quot;;</span><br><span class="line">               regulator-name = &quot;vcc3v3&quot;;</span><br><span class="line">               regulator-min-microvolt = &lt;3300000&gt;;</span><br><span class="line">               regulator-max-microvolt = &lt;3300000&gt;;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<p>在外部添加 mmc0 使能代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&amp;mmc0 &#123;</span><br><span class="line">	vmmc-supply = &lt;&amp;reg_vcc3v3&gt;;</span><br><span class="line">    bus-width = &lt;4&gt;;</span><br><span class="line">    broken-cd;</span><br><span class="line">    status = &quot;okay&quot;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上电启动后，在 SecureCRT 中看到串口输出信息（如 图28 所示），又踩坑了…😤</p>
+<p><img src="/2022/03/02/F1C100S-Note3/28.png" alt="28"></p>
+<center>图28</center>
+
+<p>根据错误（error -8）提示  <a target="_blank" rel="noopener" href="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/include/uapi/asm-generic/errno-base.h">查表</a>（知道 ENOEXEC    8   /<em> Exec format error </em>/   即格式错误），和 <em>/sbin/init</em> 这个文件有关，进入 <em>/sbin</em> 目录输入以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -la init</span><br></pre></td></tr></table></figure>
+<p>得知其指向 <em>/bin/busybox</em> 这个文件，说明问题出在 busybox 这个文件上。再仔细一看，丫的 busybox 是红色…😂 没有执行权限，运行不出问题才怪呢！执行 chmod 777 命令给予读、写、执行权限。 </p>
+<p><img src="/2022/03/02/F1C100S-Note3/29.png" alt="29"></p>
+<center>图29</center>
+
+<p>重新运行后观察串口打印，发现还是一样的错误，这是为什么呢？通过对比 TF 卡里的 <em>busybox</em> 和刚编译的 <em>busybox</em> （如 图30 所示）发现可能是在执行 sudo tar -xvf rootfs.tar -C /media/z/rootfs/ 命令将其解压到 TF 卡 <em>rootfs</em> 分区时出了问题。</p>
+<p><img src="/2022/03/02/F1C100S-Note3/30.png" alt="30"></p>
+<center>图30</center>
+
+<p>修改后新运行后观察串口打印，发现软连接拷贝不完全（如 图31 所示），输入以下命令查看建立的软链接：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -il</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/02/F1C100S-Note3/31.png" alt="31"></p>
+<center>图31</center>
+
+<p>得到 <code>libc.so.0 -&gt; libuClibc-1.0.28.so</code> ，接下来删除软链接 libc.so.0 再重新软链接</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo rm -rf libc.so.0</span><br><span class="line">sudo ln -s libuClibc-1.0.28.so libc.so.0</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/02/F1C100S-Note3/32.png" alt="32"></p>
+<center>图32</center>
+
+<p>打开 SecureCRT 可以看到正常启动了，输入用户名和密码，默认用户名是 <em>root</em>，密码之前我们修改过是 <em>19010204</em> （如 图33 所示）</p>
+<p><img src="/2022/03/02/F1C100S-Note3/33.png" alt="33"></p>
+<center>图33</center>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">poweroff</span><br></pre></td></tr></table></figure>
+<p>接下来是提升 b 格的时候🤣🤣🤣如若不需要可以跳过这一趴，输入以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在最后一行添加以下代码：</span></span><br><span class="line">export PS1=&#x27;\u@\h:\w\a\$ &#x27;</span><br></pre></td></tr></table></figure>
+<p>重启后发现是不是 b 格瞬间起来了（如 图54 所示）😎</p>
+<p><img src="/2022/03/02/F1C100S-Note3/54.png" alt="54"></p>
+<center>图54</center>
+
+<p>我们发现现在的主机名是 buildroot 不行得换个响亮得名字，接下来修改主机名（如 图55 所示），命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HOSTNAME=z-Rhino-Pi</span><br><span class="line">echo $HOSTNAME &gt; /etc/hostname</span><br><span class="line">echo $HOSTNAME &gt; /proc/sys/kernel/hostname</span><br><span class="line">sed -i &#x27;/localhost/s/$/\t&#x27;&quot;$HOSTNAME&quot;&#x27;/g&#x27; /etc/hosts</span><br></pre></td></tr></table></figure>
+<p><img src="/2022/03/02/F1C100S-Note3/55.png" alt="55"></p>
+<center>图55</center>
+
+
+
+
+
+
+<h3 id="busyBox-制作根文件系统（未编写）"><a href="#busyBox-制作根文件系统（未编写）" class="headerlink" title=" busyBox 制作根文件系统（未编写）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> busyBox 制作根文件系统（未编写）</i></h3><h3 id="Debian-文件系统制作（编写ing-有小bug）"><a href="#Debian-文件系统制作（编写ing-有小bug）" class="headerlink" title=" Debian 文件系统制作（编写ing - 有小bug）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> Debian 文件系统制作（编写ing - 有小bug）</i></h3><p>这里参考迪卡大佬的<a target="_blank" rel="noopener" href="https://whycan.com/t_4236.html">教程</a>整理如下，首先安装构建文件系统的工具，一个是用来chroot，一个是用来构建文件系统，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install qemu-user-static -y</span><br><span class="line">sudo apt install debootstrap -y</span><br><span class="line">mkdir debian</span><br></pre></td></tr></table></figure>
+<p>构建文件系统前，需要先确定源，从 Debian 全球镜像下载站（<a target="_blank" rel="noopener" href="https://www.debian.org/mirror/list.zh-cn.html">Debian 全球镜像站</a>）中选择适合的源，这里使用华为源，Debian 版本选择的是最新版 Debian 10 正式发行版 “buster” 命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo debootstrap --foreign --verbose --arch=armel  buster rootfs http://mirrors.huaweicloud.com/debian/</span><br></pre></td></tr></table></figure>
+<p>构建完成后 chroot 改变根目录修改密码等配置，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">cd rootfs</span><br><span class="line">sudo mount --bind /dev dev/</span><br><span class="line">sudo mount --bind /sys sys/</span><br><span class="line">sudo mount --bind /proc proc/</span><br><span class="line">sudo mount --bind /dev/pts dev/pts/</span><br><span class="line">cd ..</span><br><span class="line">sudo cp /usr/bin/qemu-arm-static rootfs/usr/bin/</span><br><span class="line">sudo chmod +x rootfs/usr/bin/qemu-arm-static</span><br><span class="line">sudo LC_ALL=C LANGUAGE=C LANG=C chroot rootfs /debootstrap/debootstrap --second-stage --verbose</span><br><span class="line">sudo LC_ALL=C LANGUAGE=C LANG=C chroot rootfs</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/* 命令详解：</span><br><span class="line"> * mount --bind 命令：用来将两个目录连接起来，将前一个目录挂载到后一个目录上，所有对后一个目录的访问都是对前一个目录的访问 </span><br><span class="line"> * chmod +x     命令：给执行权限</span><br><span class="line"> * LC_ALL=C     命令：去除全部本地化的设置</span><br><span class="line"> * LANGUAGE=C   命令：LANGUAGE 是设置应用程序的界面语言，LANGUAGE=C 去除应用程序的界面语言的设置</span><br><span class="line"> * LANG=C       命令：优先级（LC_ALL &gt; LC_* &gt;LANG）</span><br><span class="line"> * chroot       命令：</span><br><span class="line"> * 				举例：</span><br><span class="line"> *					 chroot target /bin/sh 即 将target作为根目录(运行其中的/bin/sh)</span><br><span class="line"> * /</span><br></pre></td></tr></table></figure>
+<p>接着俺们修改源，提高下载网速，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+<p>修改为 <code>deb http://mirrors.huaweicloud.com/debian buster main</code> 如果是不需要修改，改完后执行 <code>apt-get update</code> 使修改后的源生效。接着，安装文件系统所需的库，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">apt-get install wpasupplicant 	#安装WIFI配置相关的组件</span><br><span class="line">apt-get install net-tools     	#安装网络基础组件、如使用ifconfig等</span><br><span class="line">apt-get install udhcpc        	#当wifi连接成功后，需要用这个组件去获取IP地址</span><br><span class="line">apt-get install gcc</span><br><span class="line"></span><br><span class="line">apt-get install wireless-tools </span><br><span class="line">apt install sudo vim openssh-server htop</span><br><span class="line">apt install pciutils usbutils acpi</span><br></pre></td></tr></table></figure>
+<p>接着修改root登录密码，并添加用户，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">passwd root</span><br><span class="line"></span><br><span class="line">groupadd Rhino</span><br><span class="line">useradd -m -g Rhino -s /bin/bash Janz</span><br><span class="line">passwd Janz</span><br></pre></td></tr></table></figure>
+<p>接下来要添加用户 sudo 权限，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/sudoers</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 在 User privilege specification 下添加以下代码</span></span><br><span class="line">Janz    ALL=(ALL:ALL) ALL</span><br></pre></td></tr></table></figure>
+<p>修改主机名，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HOSTNAME=Janz-Rhino-Pi</span><br><span class="line">echo $HOSTNAME &gt; /etc/hostname</span><br><span class="line">echo $HOSTNAME &gt; /proc/sys/kernel/hostname</span><br><span class="line">sed -i &#x27;/localhost/s/$/\t&#x27;&quot;$HOSTNAME&quot;&#x27;/g&#x27; /etc/hosts</span><br></pre></td></tr></table></figure>
+<p>修改系统默认时区，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</span><br></pre></td></tr></table></figure>
+<p>接下来清理缓存，卸载刚在挂载的文件夹，打包文件系统，命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apt-cache clean		#删除安装包</span><br><span class="line">exit  				#退出chroot</span><br><span class="line">sudo rm rootfs/usr/bin/qemu-arm-static</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 卸载刚在挂载的文件夹</span></span><br><span class="line">cd rootfs</span><br><span class="line">sudo umount   dev/pts/</span><br><span class="line">sudo umount   dev/</span><br><span class="line">sudo umount   sys/</span><br><span class="line">sudo umount   proc/</span><br><span class="line">sudo umount   dev/pts/</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 打包文件系统</span></span><br><span class="line">cd rootfs </span><br><span class="line">tar cvf ../rootfs.tar .    #要注意那个.  代表当前目录</span><br></pre></td></tr></table></figure>
+<p>打包完成后会生成一个 rootfs.tar 压缩包，参考 <strong>“Buildroot 制作根文件系统”</strong> 教程将其解压拷贝进上一环节创建的 TF 卡 rfoots 分区。</p>
+<h3 id="NES-游戏（未编写）"><a href="#NES-游戏（未编写）" class="headerlink" title=" NES 游戏（未编写）"></a><i class="fa fa-link faa-horizontal animated-hover faa-slow"> NES 游戏（未编写）</i></h3></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Jan</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://jan-z.top/2022/03/02/F1C100S-Note3/">https://jan-z.top/2022/03/02/F1C100S-Note3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://jan-z.top" target="_blank">Jan-blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/Task_F1C100S.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/03/06/F1C100S-Note4/"><img class="prev-cover" src="/img/Task_F1C100S.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">F1C100S踩坑记录（四）</div></div></a></div><div class="next-post pull-right"><a href="/2022/03/01/F1C100S-Note2/"><img class="next-cover" src="/img/Task_F1C100S.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">F1C100S踩坑记录（二）</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/logo1%20(2).png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Jan</div><div class="author-info__description">不定时更新的博客</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">4</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/CUTETA"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://gitee.com/Jan_Secret_base" target="_blank" title="Gitee"><i class="fab fa-google"></i></a><a class="social-icon" href="mailto:13242449415@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">Hi, welcome to my blog!（20：00-22：00为本站更新时间，期间可能会无法访问，可重复刷新多次！）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#rootfs-%E6%A0%B9%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%A7%BB%E6%A4%8D"><span class="toc-number">1.</span> <span class="toc-text"> rootfs  根文件系统移植</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Buildroot-%E5%88%B6%E4%BD%9C%E6%A0%B9%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.1.</span> <span class="toc-text"> Buildroot 制作根文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#busyBox-%E5%88%B6%E4%BD%9C%E6%A0%B9%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%88%E6%9C%AA%E7%BC%96%E5%86%99%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text"> busyBox 制作根文件系统（未编写）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Debian-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%88%B6%E4%BD%9C%EF%BC%88%E7%BC%96%E5%86%99ing-%E6%9C%89%E5%B0%8Fbug%EF%BC%89"><span class="toc-number">1.3.</span> <span class="toc-text"> Debian 文件系统制作（编写ing - 有小bug）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#NES-%E6%B8%B8%E6%88%8F%EF%BC%88%E6%9C%AA%E7%BC%96%E5%86%99%EF%BC%89"><span class="toc-number">1.4.</span> <span class="toc-text"> NES 游戏（未编写）</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/06/F1C100S-Note4/" title="F1C100S踩坑记录（四）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（四）"/></a><div class="content"><a class="title" href="/2022/03/06/F1C100S-Note4/" title="F1C100S踩坑记录（四）">F1C100S踩坑记录（四）</a><time datetime="2022-03-06T05:12:24.000Z" title="发表于 2022-03-06 13:12:24">2022-03-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/02/F1C100S-Note3/" title="F1C100S踩坑记录（三）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（三）"/></a><div class="content"><a class="title" href="/2022/03/02/F1C100S-Note3/" title="F1C100S踩坑记录（三）">F1C100S踩坑记录（三）</a><time datetime="2022-03-02T06:42:28.000Z" title="发表于 2022-03-02 14:42:28">2022-03-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/01/F1C100S-Note2/" title="F1C100S踩坑记录（二）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（二）"/></a><div class="content"><a class="title" href="/2022/03/01/F1C100S-Note2/" title="F1C100S踩坑记录（二）">F1C100S踩坑记录（二）</a><time datetime="2022-03-01T13:47:06.000Z" title="发表于 2022-03-01 21:47:06">2022-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/03/01/F1C100S-Note1/" title="F1C100S踩坑记录（一）"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="F1C100S踩坑记录（一）"/></a><div class="content"><a class="title" href="/2022/03/01/F1C100S-Note1/" title="F1C100S踩坑记录（一）">F1C100S踩坑记录（一）</a><time datetime="2022-03-01T00:35:35.000Z" title="发表于 2022-03-01 08:35:35">2022-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/02/27/Task-F1C100S/" title="Task_F1C100S"><img src="/img/Task_F1C100S.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Task_F1C100S"/></a><div class="content"><a class="title" href="/2022/02/27/Task-F1C100S/" title="Task_F1C100S">Task_F1C100S</a><time datetime="2022-02-27T08:25:01.000Z" title="发表于 2022-02-27 16:25:01">2022-02-27</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 - 2022 By Jan</div><div class="footer_custom_text">框架 Hexo | 主題 Butterfly</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><div class="search-dialog__title" id="local-search-title">本地搜索</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div></div><hr/><div id="local-search-results"></div><span class="search-close-button"><i class="fas fa-times"></i></span></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script src="/js/search/local-search.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '7c8dc76ecb8d692c9e8e',
+      clientSecret: '56e15f4df48798e4cb28bb8356ce74832796c7d4',
+      repo: 'comment',
+      owner: 'CUTETA',
+      admin: ['CUTETA'],
+      id: 'ed92b390045cbcc52c4021dab4426095',
+      language: 'zh-CN',
+      perPage: 10,
+      distractionFreeMode: false,
+      pagerDirection: 'last',
+      createIssueManually: true,
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk@latest/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><!-- hexo injector body_end start --><script async src="//at.alicdn.com/t/font_2032782_8d5kxvn09md.js"></script><!-- hexo injector body_end end --></body></html>
